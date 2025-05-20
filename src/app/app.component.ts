@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { Device } from '@capacitor/device';
+import { Platform } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
+import config from 'capacitor.config';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +11,31 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+
+  public load: boolean;
+
+  constructor(
+    private platform: Platform,
+    private translate: TranslateService
+  ) {
+    this.translate.setDefaultLang('es');
+    this.load = false;
+    this.initApp();
+  }
+
+  initApp(){
+    this.platform.ready().then(async () => {
+
+      const language = await Device.getLanguageCode();
+
+      if(language.value){
+        this.translate.use(language.value.slice(0,2));
+      }
+
+      config.plugins.CapacitorHttp.enabled = true;
+          this.load = true;
+
+
+    })
+  }
 }
